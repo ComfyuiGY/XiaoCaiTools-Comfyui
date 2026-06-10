@@ -13,8 +13,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # 设置 Web 目录
 WEB_DIRECTORY = "./web"
 
-print(f"[XiaoCaiTools] 初始化，加载路径: {current_dir}")
-
 # 导入所有节点
 nodes_dir = os.path.join(current_dir, "nodes")
 
@@ -27,7 +25,6 @@ def load_node_module(module_name, file_name):
     try:
         file_path = os.path.join(nodes_dir, file_name)
         if not os.path.exists(file_path):
-            print(f"[XiaoCaiTools] 文件不存在: {file_path}")
             return None
         
         spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -41,11 +38,8 @@ def load_node_module(module_name, file_name):
             if isinstance(obj, type):
                 classes[name] = obj
         
-        print(f"[XiaoCaiTools] 加载模块 {file_name}: {list(classes.keys())}")
         return classes
-    except Exception as e:
-        print(f"[XiaoCaiTools] 加载模块 {file_name} 失败: {e}")
-        traceback.print_exc()
+    except Exception:
         return None
 
 # 收集所有节点类
@@ -90,9 +84,12 @@ modules_config = [
         "UltraSwitchSelect": "🎛️ 万能判断切换(手动)",
     }),
     ("text_file_reader.py", "text_file_reader", {
-    "XiaoCaiTextFileReader": "📄 文本文件读取器",      # 注意这里要用新类名
-    "XiaoCaiTextBatchReader": "📚 批量文本读取器",
-    "XiaoCaiTextFolderScanner": "🔍 文件夹文本扫描器",
+        "XiaoCaiTextFileReader": "📄 文本文件读取器",
+        "XiaoCaiTextBatchReader": "📚 批量文本读取器",
+        "XiaoCaiTextFolderScanner": "🔍 文件夹文本扫描器",
+    }),
+    ("text_saver.py", "text_saver", {
+        "TextSaver": "📝 保存文本(高级)",
     }),
     ("resolution_selector.py", "resolution_selector", {
         "AdvancedResolutionSelector": "🎯 高级分辨率选择器",
@@ -108,24 +105,15 @@ for file_name, module_name, display_names in modules_config:
                 NODE_CLASS_MAPPINGS[class_name] = class_obj
                 NODE_DISPLAY_NAME_MAPPINGS[class_name] = display_names[class_name]
 
-print(f"[XiaoCaiTools] 成功加载 {len(NODE_CLASS_MAPPINGS)} 个节点")
-print(f"[XiaoCaiTools] 节点列表: {list(NODE_CLASS_MAPPINGS.keys())}")
-
-# ========== 注册 API 路由（重要！）==========
+# ========== 注册 API 路由 ==========
 try:
     web_api_path = os.path.join(current_dir, "web", "api.py")
-    print(f"[XiaoCaiTools] 检查 API 文件: {web_api_path}")
     if os.path.exists(web_api_path):
-        print(f"[XiaoCaiTools] API 文件存在，正在加载...")
         import importlib.util
         spec = importlib.util.spec_from_file_location("xiaocaitools_api", web_api_path)
         api_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(api_module)
-        print("[XiaoCaiTools] API 路由已注册")
-    else:
-        print(f"[XiaoCaiTools] API 文件不存在: {web_api_path}")
-except Exception as e:
-    print(f"[XiaoCaiTools] API 路由注册失败: {e}")
-    traceback.print_exc()
+except Exception:
+    pass
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]

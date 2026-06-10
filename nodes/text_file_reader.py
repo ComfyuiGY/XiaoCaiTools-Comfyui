@@ -49,9 +49,8 @@ class TextFileStorage:
         try:
             for ext in extensions:
                 files.extend(folder.glob(f"*{ext}"))
-        except Exception as e:
-            print(f"扫描文件夹出错: {str(e)}")
-            return []
+        except Exception:
+            pass
         
         return sorted([str(f) for f in files])
     
@@ -76,7 +75,7 @@ class XiaoCaiTextFileReader:
         # 固定使用 output 文件夹
         output_dir = folder_paths.output_directory
         
-        # 获取实际文件列表（每次节点加载时刷新）
+        # 获取实际文件列表
         actual_files = TextFileStorage.get_file_names(output_dir)
         if not actual_files:
             actual_files = ["无可用文件"]
@@ -108,7 +107,6 @@ class XiaoCaiTextFileReader:
     
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        # 每次执行都返回不同值，确保节点重新执行时重新获取文件列表
         return float("nan")
     
     def read_text(self, 读取模式, 固定文件名, 索引):
@@ -121,7 +119,7 @@ class XiaoCaiTextFileReader:
             error_msg = f"❌ 文件夹不存在: {folder_path}"
             return (error_msg, -1, 0, error_msg)
         
-        # 每次执行都重新扫描文件列表（确保最新）
+        # 每次执行都重新扫描文件列表
         extensions = ['.txt', '.md', '.json']
         files = []
         for ext in extensions:
@@ -147,7 +145,6 @@ class XiaoCaiTextFileReader:
             status = f"🎲 随机读取 [{current_idx + 1}/{len(file_list)}]"
             
         elif 读取模式 == "固定读取":
-            # 查找文件
             found = False
             for idx, f in enumerate(file_list):
                 if os.path.basename(f) == 固定文件名:
