@@ -90,9 +90,9 @@ modules_config = [
         "UltraSwitchSelect": "🎛️ 万能判断切换(手动)",
     }),
     ("text_file_reader.py", "text_file_reader", {
-        "TextFileReader": "📄 文本文件读取器",
-        "TextBatchReader": "📚 批量文本读取器",
-        "TextFolderScanner": "🔍 文件夹文本扫描器",
+    "XiaoCaiTextFileReader": "📄 文本文件读取器",      # 注意这里要用新类名
+    "XiaoCaiTextBatchReader": "📚 批量文本读取器",
+    "XiaoCaiTextFolderScanner": "🔍 文件夹文本扫描器",
     }),
     ("resolution_selector.py", "resolution_selector", {
         "AdvancedResolutionSelector": "🎯 高级分辨率选择器",

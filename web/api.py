@@ -32,8 +32,6 @@ def get_options_from_file(filename):
         return []
     
     base_path = get_comfyui_base_path()
-    
-    # 只使用 input/wildcards 路径
     file_path = Path(base_path) / "input" / "wildcards" / f"{filename}.txt"
     
     if file_path.exists():
@@ -52,6 +50,58 @@ def get_options_from_file(filename):
     return []
 
 
+# ========== 文本文件读取器 API ==========
+def scan_text_files(folder_path, extensions_str):
+    """扫描文本文件，返回文件名列表"""
+    if not folder_path or not os.path.exists(folder_path):
+        return []
+    
+    extensions = [ext.strip() for ext in extensions_str.split(",") if ext.strip()]
+    if not extensions:
+        extensions = ['.txt', '.md', '.json']
+    extensions = [ext if ext.startswith('.') else f'.{ext}' for ext in extensions]
+    
+    folder = Path(folder_path)
+    if not folder.exists():
+        return []
+    
+    files = []
+    try:
+        for ext in extensions:
+            files.extend(folder.glob(f"*{ext}"))
+    except Exception as e:
+        print(f"[TextFileReader API] 扫描失败: {e}")
+        return []
+    
+    return sorted([f.name for f in files])
+
+
+@PromptServer.instance.routes.get("/api/textfilereader/files")
+async def get_text_files(request):
+    """获取文本文件列表 API"""
+    try:
+        folder_path = request.query.get("folder", "")
+        extensions = request.query.get("extensions", ".txt,.md,.json")
+        
+        print(f"[TextFileReader API] 请求: folder={folder_path}")
+        
+        if not folder_path:
+            return web.json_response({"success": False, "files": [], "error": "文件夹路径为空"}, status=400)
+        
+        if not os.path.exists(folder_path):
+            return web.json_response({"success": True, "files": [], "error": "文件夹不存在"})
+        
+        files = scan_text_files(folder_path, extensions)
+        
+        print(f"[TextFileReader API] 找到 {len(files)} 个文件")
+        
+        return web.json_response({"success": True, "files": files})
+    except Exception as e:
+        print(f"[TextFileReader API] 错误: {e}")
+        return web.json_response({"success": False, "files": [], "error": str(e)}, status=500)
+
+
+# ========== 原有 API ==========
 @PromptServer.instance.routes.get("/api/textlistselector/options")
 async def get_options(request):
     """获取文件选项 API"""
@@ -61,13 +111,11 @@ async def get_options(request):
             return web.json_response({"success": False, "options": []}, status=400)
         
         print(f"[TextListSelector API] 请求: {filename}")
-        
         options = get_options_from_file(filename)
-        
         return web.json_response({"success": True, "options": options})
     except Exception as e:
         print(f"[TextListSelector API] 错误: {e}")
         return web.json_response({"success": False, "error": str(e), "options": []}, status=500)
 
 
-print("[TextListSelector API] 已加载")
+print("[API] 已加载 - TextListSelector + TextFileReader")
