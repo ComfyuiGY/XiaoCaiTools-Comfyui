@@ -111,4 +111,21 @@ for file_name, module_name, display_names in modules_config:
 print(f"[XiaoCaiTools] 成功加载 {len(NODE_CLASS_MAPPINGS)} 个节点")
 print(f"[XiaoCaiTools] 节点列表: {list(NODE_CLASS_MAPPINGS.keys())}")
 
+# ========== 注册 API 路由（重要！）==========
+try:
+    web_api_path = os.path.join(current_dir, "web", "api.py")
+    print(f"[XiaoCaiTools] 检查 API 文件: {web_api_path}")
+    if os.path.exists(web_api_path):
+        print(f"[XiaoCaiTools] API 文件存在，正在加载...")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("xiaocaitools_api", web_api_path)
+        api_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(api_module)
+        print("[XiaoCaiTools] API 路由已注册")
+    else:
+        print(f"[XiaoCaiTools] API 文件不存在: {web_api_path}")
+except Exception as e:
+    print(f"[XiaoCaiTools] API 路由注册失败: {e}")
+    traceback.print_exc()
+
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
