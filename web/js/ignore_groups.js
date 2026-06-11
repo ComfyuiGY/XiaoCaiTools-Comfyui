@@ -633,7 +633,7 @@ function buildIgnoreGroupsUI(node) {
 
     function buildStatefulSig() {
         const list = visible();
-        const effectiveColor = nameColor || "#2b7c97";
+        const effectiveColor = nameColor || "#2e76a3";
         let sig = list.map(g => {
             const isOn = mode === "default"
                 ? (Array.isArray(activeSet) && activeSet.includes(g.title))
@@ -650,7 +650,7 @@ function buildIgnoreGroupsUI(node) {
         _lastBuildSig = sig;
 
         const list = visible();
-        const effectiveColor = nameColor || "#a89961";
+        const effectiveColor = nameColor || "#2e76a3";
 
         rootEl.innerHTML = "";
 
@@ -981,40 +981,6 @@ function buildIgnoreGroupsUI(node) {
         });
         pop.appendChild(titleEl);
 
-        // 关键词筛选标签（带帮助图标）
-        const fLabelRow = document.createElement("div");
-        Object.assign(fLabelRow.style, {
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            marginBottom: "4px"
-        });
-
-        const fLabel = document.createElement("div");
-        fLabel.textContent = "关键词筛选";
-        Object.assign(fLabel.style, { fontSize: "13px", fontWeight: "bold" });
-
-        const fHelp = document.createElement("span");
-        fHelp.textContent = "❓";
-        Object.assign(fHelp.style, {
-            fontSize: "12px", color: "#888", cursor: "help",
-            marginLeft: "8px"
-        });
-        fHelp.title = "筛选语法说明：\n\n" +
-                     "| (或) : 人物|场景  匹配包含'人物'或'场景'\n" +
-                     "& (与) : 人物&背景  匹配同时包含'人物'和'背景'\n" +
-                     "! (非) : !废弃      匹配不包含'废弃'\n" +
-                     "括号   : (人物|角色)&!旧版\n" +
-                     "正则   : /^UI/      匹配以'UI'开头的组名\n" +
-                     "示例   : 人物|场景\n" +
-                     "         人物&背景\n" +
-                     "         !废弃\n" +
-                     "         (人物|角色)&!旧版\n" +
-                     "         /^UI/\n" +
-                     "         /test/i";
-
-        fLabelRow.appendChild(fLabel);
-        fLabelRow.appendChild(fHelp);
-        pop.appendChild(fLabelRow);
-
         const dLabel = document.createElement("div");
         dLabel.textContent = "路由控制";
         Object.assign(dLabel.style, { fontSize: "13px", fontWeight: "bold", marginBottom: "6px" });
@@ -1040,6 +1006,11 @@ function buildIgnoreGroupsUI(node) {
         dRow.appendChild(dLblBypass); dRow.appendChild(dLblDisable); pop.appendChild(dRow);
         dRadioBypass.addEventListener("change", applyAll);
         dRadioDisable.addEventListener("change", applyAll);
+
+        const fLabel = document.createElement("div");
+        fLabel.textContent = "关键词筛选";
+        Object.assign(fLabel.style, { fontSize: "13px", fontWeight: "bold", marginBottom: "4px" });
+        pop.appendChild(fLabel);
 
         const fInput = document.createElement("input");
         fInput.type = "text"; 
@@ -1245,7 +1216,7 @@ function buildIgnoreGroupsUI(node) {
         Object.assign(colorRow.style, { display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" });
 
         const cInput = document.createElement("input");
-        cInput.type = "color"; cInput.value = nameColor || "#a89961";
+        cInput.type = "color"; cInput.value = nameColor || "#2e76a3";
         Object.assign(cInput.style, {
             width: "36px", height: "28px", padding: "0",
             border: "1px solid #555", borderRadius: "4px", background: "#1a1a1a", cursor: "pointer",
@@ -1253,7 +1224,7 @@ function buildIgnoreGroupsUI(node) {
         colorRow.appendChild(cInput);
 
         const cHex = document.createElement("input");
-        cHex.type = "text"; cHex.value = nameColor || "#a89961";
+        cHex.type = "text"; cHex.value = nameColor || "#2e76a3";
         Object.assign(cHex.style, {
             flex: "1", padding: "5px 8px", fontSize: "13px",
             background: "#1a1a1a", border: "1px solid #555", borderRadius: "4px",
