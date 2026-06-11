@@ -91,6 +91,9 @@ modules_config = [
     ("text_saver.py", "text_saver", {
         "TextSaver": "📝 保存文本(高级)",
     }),
+    ("ignore_groups.py", "ignore_groups", {
+        "XiaoCaiIgnoreGroups": "忽略分组",
+    }),
     ("resolution_selector.py", "resolution_selector", {
         "AdvancedResolutionSelector": "🎯 高级分辨率选择器",
         "AdvancedResolutionSelectorLatent": "🎯 高级分辨率选择器(Latent)",

@@ -22,6 +22,7 @@ from .ultra_switch import UltraSwitch, UltraSwitchSelect
 from .text_file_reader import XiaoCaiTextFileReader, XiaoCaiTextBatchReader, XiaoCaiTextFolderScanner
 from .resolution_selector import AdvancedResolutionSelector, AdvancedResolutionSelectorLatent
 from .text_saver import TextSaver
+from .ignore_groups import XiaoCaiIgnoreGroups
 
 __all__ = [
     # 图像保存
@@ -61,4 +62,7 @@ __all__ = [
     
     # 文本保存器
     "TextSaver",
+    
+    # 忽略分组
+    "XiaoCaiIgnoreGroups",
 ]
