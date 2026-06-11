@@ -633,7 +633,7 @@ function buildIgnoreGroupsUI(node) {
 
     function buildStatefulSig() {
         const list = visible();
-        const effectiveColor = nameColor || "#2e76a3";
+        const effectiveColor = nameColor || "#3993c0";
         let sig = list.map(g => {
             const isOn = mode === "default"
                 ? (Array.isArray(activeSet) && activeSet.includes(g.title))
@@ -650,7 +650,7 @@ function buildIgnoreGroupsUI(node) {
         _lastBuildSig = sig;
 
         const list = visible();
-        const effectiveColor = nameColor || "#2e76a3";
+        const effectiveColor = nameColor || "#3993c0";
 
         rootEl.innerHTML = "";
 
@@ -1216,7 +1216,7 @@ function buildIgnoreGroupsUI(node) {
         Object.assign(colorRow.style, { display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" });
 
         const cInput = document.createElement("input");
-        cInput.type = "color"; cInput.value = nameColor || "#2e76a3";
+        cInput.type = "color"; cInput.value = nameColor || "#3993c0";
         Object.assign(cInput.style, {
             width: "36px", height: "28px", padding: "0",
             border: "1px solid #555", borderRadius: "4px", background: "#1a1a1a", cursor: "pointer",
@@ -1224,7 +1224,7 @@ function buildIgnoreGroupsUI(node) {
         colorRow.appendChild(cInput);
 
         const cHex = document.createElement("input");
-        cHex.type = "text"; cHex.value = nameColor || "#2e76a3";
+        cHex.type = "text"; cHex.value = nameColor || "#3993c0";
         Object.assign(cHex.style, {
             flex: "1", padding: "5px 8px", fontSize: "13px",
             background: "#1a1a1a", border: "1px solid #555", borderRadius: "4px",
