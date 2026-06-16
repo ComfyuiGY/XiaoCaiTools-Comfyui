@@ -23,6 +23,7 @@ from .text_file_reader import XiaoCaiTextFileReader, XiaoCaiTextBatchReader, Xia
 from .resolution_selector import AdvancedResolutionSelector, AdvancedResolutionSelectorLatent
 from .text_saver import TextSaver
 from .ignore_groups import XiaoCaiIgnoreGroups
+from .memory_cleaner import XiaoCaiMemoryCleaner
 
 __all__ = [
     # 图像保存
@@ -65,4 +66,7 @@ __all__ = [
     
     # 忽略分组
     "XiaoCaiIgnoreGroups",
+    
+    # 内存清理器
+    "XiaoCaiMemoryCleaner",
 ]

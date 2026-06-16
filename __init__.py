@@ -94,6 +94,9 @@ modules_config = [
     ("ignore_groups.py", "ignore_groups", {
         "XiaoCaiIgnoreGroups": "忽略分组",
     }),
+    ("memory_cleaner.py", "memory_cleaner", {
+        "XiaoCaiMemoryCleaner": "🧹 内存/显存清理",
+    }),
     ("resolution_selector.py", "resolution_selector", {
         "AdvancedResolutionSelector": "🎯 高级分辨率选择器",
         "AdvancedResolutionSelectorLatent": "🎯 高级分辨率选择器(Latent)",
