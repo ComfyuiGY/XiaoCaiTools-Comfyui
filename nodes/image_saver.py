@@ -36,7 +36,7 @@ class ImageSaver:
                     "tooltip": "输出路径，支持时间表达式\n例如：[time(%Y-%m-%d)] 或 %date:yyyyMMdd%"
                 }),
                 "文件名前缀": ("STRING", {
-                    "default": "Image",
+                    "default": "Comfyui",
                     "multiline": False,
                     "tooltip": "文件名前缀"
                 }),
@@ -144,11 +144,32 @@ class ImageSaver:
             save_dir = self.output_dir
         else:
             parsed_path = self.parse_time_expressions(base_path, current_time)
+            
+            # 判断是否为绝对路径：
+            # 1. Windows: 包含盘符（如 C:）或以 \ 开头
+            # 2. Unix: 以 / 开头
+            # 3. 包含 :\ 或 :/ 等路径分隔符组合
+            is_abs = False
             if os.path.isabs(parsed_path):
+                is_abs = True
+            # 额外检查：Windows 盘符模式
+            if re.match(r'^[a-zA-Z]:[/\\]', parsed_path):
+                is_abs = True
+            # 检查是否包含 :\ 或 :/ （Windows 路径特征）
+            if re.search(r'[a-zA-Z]:[/\\]', parsed_path):
+                is_abs = True
+            
+            if is_abs:
                 save_dir = parsed_path
             else:
+                # 相对路径：拼接到 output 目录下
+                if parsed_path.startswith('./') or parsed_path.startswith('.\\'):
+                    parsed_path = parsed_path[2:]
+                # 去除首尾的斜杠
+                parsed_path = parsed_path.strip('/\\')
                 save_dir = os.path.join(self.output_dir, parsed_path)
         
+        # 确保目录存在
         if not os.path.exists(save_dir):
             os.makedirs(save_dir, exist_ok=True)
         
@@ -195,14 +216,17 @@ class ImageSaver:
         img = Image.fromarray(i)
         return img
     
-    def save_images(self, 图像, 输出路径="", 文件名前缀="Image", 文件名分隔符="_",
+    def save_images(self, 图像, 输出路径="", 文件名前缀="Comfyui", 文件名分隔符="_",
                     文件名序号位数=4, 起始序号=1, dpi=300, 质量=100, 
                     图片格式="png", 保存工作流=True, 预览图像=True,
                     prompt=None, extra_pnginfo=None):
         
         current_time = datetime.now()
         
+        # 解析文件名前缀中的时间表达式
         parsed_prefix = self.parse_time_expressions(文件名前缀, current_time)
+        
+        # 获取保存目录
         save_dir = self.get_save_directory(输出路径, current_time)
         
         file_extension = '.' + 图片格式.lower()
@@ -293,7 +317,7 @@ class ImageSaverSimple:
                     "tooltip": "输出路径，支持时间表达式"
                 }),
                 "文件名模板": ("STRING", {
-                    "default": "Image_[time(%Y%m%d_%H%M%S)]",
+                    "default": "Comfyui_[time(%Y%m%d_%H%M%S)]",
                     "multiline": False,
                     "tooltip": "文件名模板，支持时间表达式\n如已存在相同文件会自动添加序号"
                 }),
@@ -370,9 +394,22 @@ class ImageSaverSimple:
             save_dir = self.output_dir
         else:
             parsed_path = self.parse_time_expressions(base_path)
+            
+            # 判断是否为绝对路径
+            is_abs = False
             if os.path.isabs(parsed_path):
+                is_abs = True
+            if re.match(r'^[a-zA-Z]:[/\\]', parsed_path):
+                is_abs = True
+            if re.search(r'[a-zA-Z]:[/\\]', parsed_path):
+                is_abs = True
+            
+            if is_abs:
                 save_dir = parsed_path
             else:
+                if parsed_path.startswith('./') or parsed_path.startswith('.\\'):
+                    parsed_path = parsed_path[2:]
+                parsed_path = parsed_path.strip('/\\')
                 save_dir = os.path.join(self.output_dir, parsed_path)
         
         if not os.path.exists(save_dir):
