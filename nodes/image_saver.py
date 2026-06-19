@@ -238,12 +238,27 @@ class ImageSaver:
         output_files = []
         results = []
         
-        # 计算子文件夹路径
+        # ========== 修复开始 ==========
+        # 计算子文件夹路径（修复跨盘符 ValueError 问题）
         subfolder = ""
         if save_dir != self.output_dir:
-            rel_path = os.path.relpath(save_dir, self.output_dir)
-            if rel_path != ".":
-                subfolder = rel_path.replace(os.sep, "/")
+            try:
+                rel_path = os.path.relpath(save_dir, self.output_dir)
+                if rel_path != ".":
+                    subfolder = rel_path.replace(os.sep, "/")
+            except ValueError:
+                # 跨盘符时（例如 O: 和 I: 之间），手动提取相对路径
+                # 去除盘符（如 "O:" 或 "I:"），取剩余部分作为子文件夹
+                parts = save_dir.split(os.sep)
+                if len(parts) > 1 and re.match(r'^[a-zA-Z]:$', parts[0]):
+                    parts = parts[1:]
+                # 过滤掉空字符串
+                parts = [p for p in parts if p]
+                if parts:
+                    subfolder = os.path.join(*parts).replace(os.sep, "/")
+                else:
+                    subfolder = ""
+        # ========== 修复结束 ==========
         
         for idx, image in enumerate(图像):
             img = self.tensor2pil(image)
@@ -471,11 +486,27 @@ class ImageSaverSimple:
         
         save_dir = self.get_save_directory(输出路径)
         
+        # ========== 修复开始 ==========
+        # 计算子文件夹路径（修复跨盘符 ValueError 问题）
         subfolder = ""
         if save_dir != self.output_dir:
-            rel_path = os.path.relpath(save_dir, self.output_dir)
-            if rel_path != ".":
-                subfolder = rel_path.replace(os.sep, "/")
+            try:
+                rel_path = os.path.relpath(save_dir, self.output_dir)
+                if rel_path != ".":
+                    subfolder = rel_path.replace(os.sep, "/")
+            except ValueError:
+                # 跨盘符时（例如 O: 和 I: 之间），手动提取相对路径
+                # 去除盘符（如 "O:" 或 "I:"），取剩余部分作为子文件夹
+                parts = save_dir.split(os.sep)
+                if len(parts) > 1 and re.match(r'^[a-zA-Z]:$', parts[0]):
+                    parts = parts[1:]
+                # 过滤掉空字符串
+                parts = [p for p in parts if p]
+                if parts:
+                    subfolder = os.path.join(*parts).replace(os.sep, "/")
+                else:
+                    subfolder = ""
+        # ========== 修复结束 ==========
         
         output_files = []
         results = []
