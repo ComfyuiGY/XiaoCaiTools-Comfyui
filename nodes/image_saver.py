@@ -93,6 +93,7 @@ class ImageSaver:
             "hidden": {
                 "prompt": "PROMPT",
                 "extra_pnginfo": "EXTRA_PNGINFO",
+                "unique_id": "UNIQUE_ID",
             }
         }
     
@@ -145,31 +146,22 @@ class ImageSaver:
         else:
             parsed_path = self.parse_time_expressions(base_path, current_time)
             
-            # 判断是否为绝对路径：
-            # 1. Windows: 包含盘符（如 C:）或以 \ 开头
-            # 2. Unix: 以 / 开头
-            # 3. 包含 :\ 或 :/ 等路径分隔符组合
             is_abs = False
             if os.path.isabs(parsed_path):
                 is_abs = True
-            # 额外检查：Windows 盘符模式
             if re.match(r'^[a-zA-Z]:[/\\]', parsed_path):
                 is_abs = True
-            # 检查是否包含 :\ 或 :/ （Windows 路径特征）
             if re.search(r'[a-zA-Z]:[/\\]', parsed_path):
                 is_abs = True
             
             if is_abs:
                 save_dir = parsed_path
             else:
-                # 相对路径：拼接到 output 目录下
                 if parsed_path.startswith('./') or parsed_path.startswith('.\\'):
                     parsed_path = parsed_path[2:]
-                # 去除首尾的斜杠
                 parsed_path = parsed_path.strip('/\\')
                 save_dir = os.path.join(self.output_dir, parsed_path)
         
-        # 确保目录存在
         if not os.path.exists(save_dir):
             os.makedirs(save_dir, exist_ok=True)
         
@@ -219,7 +211,7 @@ class ImageSaver:
     def save_images(self, 图像, 输出路径="", 文件名前缀="Comfyui", 文件名分隔符="_",
                     文件名序号位数=4, 起始序号=1, dpi=300, 质量=100, 
                     图片格式="png", 保存工作流=True, 预览图像=True,
-                    prompt=None, extra_pnginfo=None):
+                    prompt=None, extra_pnginfo=None, unique_id=None):
         
         current_time = datetime.now()
         
@@ -238,8 +230,7 @@ class ImageSaver:
         output_files = []
         results = []
         
-        # ========== 修复开始 ==========
-        # 计算子文件夹路径（修复跨盘符 ValueError 问题）
+        # 计算子文件夹路径
         subfolder = ""
         if save_dir != self.output_dir:
             try:
@@ -247,18 +238,14 @@ class ImageSaver:
                 if rel_path != ".":
                     subfolder = rel_path.replace(os.sep, "/")
             except ValueError:
-                # 跨盘符时（例如 O: 和 I: 之间），手动提取相对路径
-                # 去除盘符（如 "O:" 或 "I:"），取剩余部分作为子文件夹
                 parts = save_dir.split(os.sep)
                 if len(parts) > 1 and re.match(r'^[a-zA-Z]:$', parts[0]):
                     parts = parts[1:]
-                # 过滤掉空字符串
                 parts = [p for p in parts if p]
                 if parts:
                     subfolder = os.path.join(*parts).replace(os.sep, "/")
                 else:
                     subfolder = ""
-        # ========== 修复结束 ==========
         
         for idx, image in enumerate(图像):
             img = self.tensor2pil(image)
@@ -300,7 +287,7 @@ class ImageSaver:
                 output_files.append(full_path)
                 
                 results.append({
-                    "filename": filename,
+                    "filename": os.path.basename(full_path),
                     "subfolder": subfolder,
                     "type": self.type
                 })
@@ -308,10 +295,13 @@ class ImageSaver:
             except Exception as e:
                 print(f"[ImageSaver] 保存失败: {e}")
         
-        if 预览图像:
-            return {"ui": {"images": results}, "result": (图像, "\n".join(output_files))}
+        # 构建返回结果
+        result = (图像, "\n".join(output_files))
+        
+        if 预览图像 and results:
+            return {"ui": {"images": results}, "result": result}
         else:
-            return {"ui": {"images": []}, "result": (图像, "\n".join(output_files))}
+            return {"result": result}
 
 
 class ImageSaverSimple:
@@ -363,6 +353,7 @@ class ImageSaverSimple:
             "hidden": {
                 "prompt": "PROMPT",
                 "extra_pnginfo": "EXTRA_PNGINFO",
+                "unique_id": "UNIQUE_ID",
             }
         }
     
@@ -410,7 +401,6 @@ class ImageSaverSimple:
         else:
             parsed_path = self.parse_time_expressions(base_path)
             
-            # 判断是否为绝对路径
             is_abs = False
             if os.path.isabs(parsed_path):
                 is_abs = True
@@ -477,7 +467,7 @@ class ImageSaverSimple:
         return img
     
     def save_image(self, 图像, 输出路径, 文件名模板, 图片格式, 质量, 保存工作流=True, 预览图像=True,
-                   prompt=None, extra_pnginfo=None):
+                   prompt=None, extra_pnginfo=None, unique_id=None):
         
         current_time = datetime.now()
         
@@ -486,8 +476,7 @@ class ImageSaverSimple:
         
         save_dir = self.get_save_directory(输出路径)
         
-        # ========== 修复开始 ==========
-        # 计算子文件夹路径（修复跨盘符 ValueError 问题）
+        # 计算子文件夹路径
         subfolder = ""
         if save_dir != self.output_dir:
             try:
@@ -495,18 +484,14 @@ class ImageSaverSimple:
                 if rel_path != ".":
                     subfolder = rel_path.replace(os.sep, "/")
             except ValueError:
-                # 跨盘符时（例如 O: 和 I: 之间），手动提取相对路径
-                # 去除盘符（如 "O:" 或 "I:"），取剩余部分作为子文件夹
                 parts = save_dir.split(os.sep)
                 if len(parts) > 1 and re.match(r'^[a-zA-Z]:$', parts[0]):
                     parts = parts[1:]
-                # 过滤掉空字符串
                 parts = [p for p in parts if p]
                 if parts:
                     subfolder = os.path.join(*parts).replace(os.sep, "/")
                 else:
                     subfolder = ""
-        # ========== 修复结束 ==========
         
         output_files = []
         results = []
@@ -560,10 +545,13 @@ class ImageSaverSimple:
             except Exception as e:
                 print(f"[ImageSaverSimple] 保存失败: {e}")
         
-        if 预览图像:
-            return {"ui": {"images": results}, "result": (图像, "\n".join(output_files))}
+        # 构建返回结果
+        result = (图像, "\n".join(output_files))
+        
+        if 预览图像 and results:
+            return {"ui": {"images": results}, "result": result}
         else:
-            return {"ui": {"images": []}, "result": (图像, "\n".join(output_files))}
+            return {"result": result}
 
 
 NODE_CLASS_MAPPINGS = {
