@@ -101,6 +101,11 @@ modules_config = [
         "AdvancedResolutionSelector": "🎯 高级分辨率选择器",
         "AdvancedResolutionSelectorLatent": "🎯 高级分辨率选择器(Latent)",
     }),
+    # ========== 新增：提示词组合器 ==========
+    ("提示词组合器.py", "prompt_combiner", {
+        "PromptCombiner": "🔗 提示词组合器",
+        "AnimaPromptCombinerT8": "🔗 提示词组合器(兼容)",
+    }),
 ]
 
 for file_name, module_name, display_names in modules_config:
