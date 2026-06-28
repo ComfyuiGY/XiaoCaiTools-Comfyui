@@ -18,7 +18,7 @@ class PromptCombiner:
         text_opt = ("STRING", {"multiline": True, "default": ""})
         return {
             "required": {
-                "分隔符": ("STRING", {"default": ", ", "tooltip": "各段落之间的分隔符"}),
+                "分隔符": ("STRING", {"default": ", ", "tooltip": "各段落之间的分隔符，留空表示直接拼接"}),
             },
             "optional": {
                 "段落_1": text_opt,
@@ -35,7 +35,7 @@ class PromptCombiner:
         组合多段提示词
         
         Args:
-            分隔符: 各段落之间的分隔符
+            分隔符: 各段落之间的分隔符，留空表示直接拼接
             **parts: 段落_1 到 段落_6
         
         Returns:
@@ -44,18 +44,21 @@ class PromptCombiner:
         # 按顺序获取各部分
         ordered = [parts.get(f"段落_{i}", "") for i in range(1, 7)]
         
-        # 清理：去除首尾空白和多余的逗号
-        cleaned = [(p or "").strip().strip(",") for p in ordered]
+        # 只去除首尾空白，保留逗号等特殊字符
+        cleaned = [(p or "").strip() for p in ordered]
         cleaned = [p for p in cleaned if p]
         
-        # 使用分隔符连接
-        separator = 分隔符 or ", "
-        result = separator.join(cleaned)
+        # 如果分隔符为空或只有空白，直接拼接（不加任何分隔符）
+        if not 分隔符 or not 分隔符.strip():
+            result = "".join(cleaned)
+        else:
+            # 使用指定分隔符连接
+            result = 分隔符.join(cleaned)
         
         return (result,)
 
 
-# ========== 如果需要兼容旧版接口，可以保留原类名 ==========
+# ========== 兼容旧版接口 ==========
 class AnimaPromptCombinerT8(PromptCombiner):
     """兼容旧版节点名称"""
     pass
@@ -63,7 +66,7 @@ class AnimaPromptCombinerT8(PromptCombiner):
 
 NODE_CLASS_MAPPINGS = {
     "PromptCombiner": PromptCombiner,
-    "AnimaPromptCombinerT8": AnimaPromptCombinerT8,  # 保留旧名称兼容
+    "AnimaPromptCombinerT8": AnimaPromptCombinerT8,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

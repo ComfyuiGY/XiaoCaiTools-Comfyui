@@ -10,8 +10,8 @@ import traceback
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# 设置 Web 目录
-WEB_DIRECTORY = "./web"
+# 设置 Web 目录（JS 文件在 web/js/ 下）
+WEB_DIRECTORY = "./web/js"
 
 # 导入所有节点
 nodes_dir = os.path.join(current_dir, "nodes")
@@ -101,10 +101,14 @@ modules_config = [
         "AdvancedResolutionSelector": "🎯 高级分辨率选择器",
         "AdvancedResolutionSelectorLatent": "🎯 高级分辨率选择器(Latent)",
     }),
-    # ========== 新增：提示词组合器 ==========
+    # ========== 提示词组合器 ==========
     ("提示词组合器.py", "prompt_combiner", {
         "PromptCombiner": "🔗 提示词组合器",
         "AnimaPromptCombinerT8": "🔗 提示词组合器(兼容)",
+    }),
+    # ========== 编辑文本 ==========
+    ("edit_text.py", "edit_text", {
+        "EditText": "✏️ 编辑文本",
     }),
 ]
 

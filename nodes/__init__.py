@@ -24,6 +24,7 @@ from .resolution_selector import AdvancedResolutionSelector, AdvancedResolutionS
 from .text_saver import TextSaver
 from .ignore_groups import XiaoCaiIgnoreGroups
 from .memory_cleaner import XiaoCaiMemoryCleaner
+from .edit_text import EditText  # 新增
 
 __all__ = [
     # 图像保存
@@ -69,4 +70,7 @@ __all__ = [
     
     # 内存清理器
     "XiaoCaiMemoryCleaner",
+    
+    # 编辑文本  # 新增
+    "EditText",
 ]
